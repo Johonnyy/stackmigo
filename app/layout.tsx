@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Serif_4, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { PostHogProvider } from "./providers";
 
 const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
@@ -31,7 +32,9 @@ export default function RootLayout({
       lang="en"
       className={`${sourceSerif.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <PostHogProvider>{children}</PostHogProvider>
+      </body>
     </html>
   );
 }
