@@ -17,9 +17,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stackmigo: security and liability audits for AI-built apps",
+  title: "Stackmigo: AI receptionists & 24/7 answering for businesses",
   description:
-    "Stackmigo reviews vibe-coded apps for the security and liability gaps that ship with fast code: exposed secrets, missing authorization, unsafe data access. Found and located before they cost you.",
+    "Stackmigo answers every call to your business — books the job, screens the caller, dispatches the emergency, and texts you the details. AI receptionists and automated answering for home services, clinics, and any business that can't afford a missed call.",
+  openGraph: {
+    title: "Stackmigo: never let another call go to voicemail",
+    description:
+      "An AI receptionist that answers every call, 24/7 — booking jobs, screening callers, and dispatching emergencies for home services and medical practices.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

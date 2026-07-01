@@ -1,18 +1,20 @@
 "use client";
 
 import { useId, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function WaitlistForm() {
+export default function DemoForm() {
+  const posthog = usePostHog();
   const emailId = useId();
-  const stackId = useId();
+  const bizId = useId();
   const errorId = useId();
 
   const [email, setEmail] = useState("");
-  const [stack, setStack] = useState("");
+  const [business, setBusiness] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [fieldError, setFieldError] = useState<string | null>(null);
 
@@ -32,9 +34,17 @@ export default function WaitlistForm() {
     setFieldError(null);
     setStatus("submitting");
 
+    const trimmedBusiness = business.trim();
+
     try {
-      // Waitlist capture is stubbed pending backend wiring (form endpoint / list).
-      // The flow, validation, and states are real; the network call is not yet.
+      // Backend lead capture (form endpoint / CRM) is still stubbed, but the
+      // demo request is recorded in PostHog so real interest is tracked now.
+      posthog?.identify(trimmed, { email: trimmed });
+      posthog?.capture("demo_requested", {
+        email: trimmed,
+        business: trimmedBusiness || null,
+      });
+
       await new Promise((resolve) => setTimeout(resolve, 700));
       setStatus("success");
     } catch {
@@ -44,21 +54,17 @@ export default function WaitlistForm() {
 
   if (status === "success") {
     return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="border-t border-ink pt-7"
-      >
-        <p className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-redline">
-          On the list
+      <div role="status" aria-live="polite" className="border-t border-ink pt-7">
+        <p className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-signal">
+          Request received
         </p>
         <p className="mt-3 max-w-[46ch] text-xl leading-snug text-ink">
-          You&apos;re in line. We&apos;ll email{" "}
+          You&apos;re on the schedule. We&apos;ll email{" "}
           <span className="font-mono text-base text-ink-soft">{email.trim()}</span>{" "}
-          when an audit slot opens.
+          to set up a call and start training your receptionist.
         </p>
         <p className="mt-3 max-w-[46ch] text-[0.95rem] leading-relaxed text-graphite">
-          No list, no drip sequence. One message, when there&apos;s a spot.
+          A real person walks you through it. No autodialer, no drip sequence.
         </p>
       </div>
     );
@@ -72,7 +78,7 @@ export default function WaitlistForm() {
             htmlFor={emailId}
             className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-graphite"
           >
-            Email
+            Work email
           </label>
           <input
             id={emailId}
@@ -89,38 +95,38 @@ export default function WaitlistForm() {
             aria-invalid={fieldError ? true : undefined}
             aria-describedby={fieldError ? errorId : undefined}
             disabled={status === "submitting"}
-            className="mt-2 w-full border-b border-hairline-strong bg-transparent pb-2 font-mono text-base text-ink placeholder:text-graphite-2 transition-colors duration-200 focus:border-redline focus:outline-none disabled:opacity-60"
+            className="mt-2 w-full border-b border-hairline-strong bg-transparent pb-2 font-mono text-base text-ink placeholder:text-graphite-2 transition-colors duration-200 focus:border-signal focus:outline-none disabled:opacity-60"
           />
         </div>
 
         <div>
           <label
-            htmlFor={stackId}
+            htmlFor={bizId}
             className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-graphite"
           >
-            What did you build it with?{" "}
+            What does your business do?{" "}
             <span className="normal-case tracking-normal text-graphite-2">(optional)</span>
           </label>
           <input
-            id={stackId}
-            name="stack"
+            id={bizId}
+            name="business"
             type="text"
-            placeholder="Next.js + Supabase, Cursor, v0, ..."
-            value={stack}
-            onChange={(e) => setStack(e.target.value)}
+            placeholder="Plumbing, dental office, HVAC, law firm, ..."
+            value={business}
+            onChange={(e) => setBusiness(e.target.value)}
             disabled={status === "submitting"}
-            className="mt-2 w-full border-b border-hairline-strong bg-transparent pb-2 font-mono text-base text-ink placeholder:text-graphite-2 transition-colors duration-200 focus:border-redline focus:outline-none disabled:opacity-60"
+            className="mt-2 w-full border-b border-hairline-strong bg-transparent pb-2 font-mono text-base text-ink placeholder:text-graphite-2 transition-colors duration-200 focus:border-signal focus:outline-none disabled:opacity-60"
           />
         </div>
 
         {fieldError && (
-          <p id={errorId} role="alert" className="font-mono text-[0.8rem] leading-relaxed text-redline-deep">
+          <p id={errorId} role="alert" className="font-mono text-[0.8rem] leading-relaxed text-signal-deep">
             {fieldError}
           </p>
         )}
 
         {status === "error" && (
-          <p role="alert" className="font-mono text-[0.8rem] leading-relaxed text-redline-deep">
+          <p role="alert" className="font-mono text-[0.8rem] leading-relaxed text-signal-deep">
             That didn&apos;t send. Check your connection and try again.
           </p>
         )}
@@ -128,9 +134,9 @@ export default function WaitlistForm() {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="group inline-flex items-center justify-center gap-2.5 self-start bg-redline px-7 py-3.5 font-mono text-[0.78rem] uppercase tracking-[0.12em] text-paper transition-colors duration-200 ease-out hover:bg-redline-deep focus-visible:bg-redline-deep disabled:cursor-not-allowed disabled:opacity-70"
+          className="group inline-flex items-center justify-center gap-2.5 self-start bg-signal px-7 py-3.5 font-mono text-[0.78rem] uppercase tracking-[0.12em] text-paper transition-colors duration-200 ease-out hover:bg-signal-deep focus-visible:bg-signal-deep disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {status === "submitting" ? "Joining the list" : "Join the waitlist"}
+          {status === "submitting" ? "Booking your call" : "Book a demo"}
           <span
             aria-hidden="true"
             className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
@@ -138,6 +144,10 @@ export default function WaitlistForm() {
             &rarr;
           </span>
         </button>
+
+        <p className="font-mono text-[0.72rem] leading-relaxed text-graphite-2">
+          15-minute call. Hear it answer a live one before you decide.
+        </p>
       </div>
     </form>
   );

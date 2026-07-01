@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /*
-  Stackmigo design tokens. North Star: "The Auditor's Field Report."
-  Ink on warm paper, one redline accent reserved for findings and the
-  primary action. Light by default; no dark mode (The Paper Rule).
-  All neutrals tinted warm; the accent is a confident vermilion.
+  Stackmigo design tokens. North Star: "The Line, on paper."
+  Ink on warm paper, one signal accent reserved for the live line
+  (the call being answered) and the single primary action.
+  Light by default; no dark mode (The Paper Rule).
+  All neutrals tinted warm; the accent is a confident on-air vermilion.
 */
 :root {
   /* Paper: warm off-white surfaces, stepped for tonal layering */
@@ -22,11 +23,12 @@
   --hairline: oklch(0.885 0.006 70);
   --hairline-strong: oklch(0.80 0.008 70);
 
-  /* Redline: the single signal accent (The Redline Rule).
-     Tuned to clear WCAG AA (>=4.5:1) both as text on paper
+  /* Signal: the single accent (The Signal Rule). The "on-air" mark —
+     the live line, the call being answered, and the one action that
+     matters. Tuned to clear WCAG AA (>=4.5:1) both as text on paper
      and as paper-colored text on the filled CTA. */
-  --redline: oklch(0.505 0.19 27);
-  --redline-deep: oklch(0.44 0.172 27);
+  --signal: oklch(0.505 0.19 27);
+  --signal-deep: oklch(0.44 0.172 27);
 }
 
 @theme inline {
@@ -39,8 +41,8 @@
   --color-graphite-2: var(--graphite-2);
   --color-hairline: var(--hairline);
   --color-hairline-strong: var(--hairline-strong);
-  --color-redline: var(--redline);
-  --color-redline-deep: var(--redline-deep);
+  --color-signal: var(--signal);
+  --color-signal-deep: var(--signal-deep);
 
   --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -60,7 +62,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Mono channel: evidence, labels, severities, prices */
+  /* Mono channel: transcripts, labels, statuses, prices */
   code,
   kbd,
   samp,
@@ -80,12 +82,12 @@
   }
 
   ::selection {
-    background-color: var(--redline);
+    background-color: var(--signal);
     color: var(--paper);
   }
 
   :focus-visible {
-    outline: 2px solid var(--redline);
+    outline: 2px solid var(--signal);
     outline-offset: 2px;
     border-radius: 1px;
   }
@@ -112,6 +114,11 @@
   .rise-2 { animation-delay: 140ms; }
   .rise-3 { animation-delay: 220ms; }
   .rise-4 { animation-delay: 300ms; }
+
+  /* The live-line indicator: a slow on-air pulse, not choreography. */
+  .live-dot {
+    animation: live-pulse 2000ms ease-in-out infinite;
+  }
 }
 
 @keyframes rise {
@@ -122,5 +129,15 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
   }
 }
